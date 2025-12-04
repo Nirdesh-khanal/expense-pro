@@ -1,279 +1,415 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   TrendingUp,
   TrendingDown,
   DollarSign,
-  Wallet,
-  PiggyBank,
+  Calendar,
+  ArrowUpRight,
+  ArrowDownRight,
   Plus,
-  Download,
-  Filter,
-  Search,
-  MoreVertical,
+  Wallet,
+  ShoppingBag,
+  Target,
+  BarChart3,
+  PieChart,
 } from "lucide-react";
 
-const Mainpage = ({ activeSection }) => {
-  const transactions = [
+const Dashboard = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState("month");
+
+  // Sample data
+  const stats = {
+    totalBalance: 45250.0,
+    monthlyIncome: 12500.0,
+    monthlyExpenses: 8750.5,
+    savingsRate: 30,
+  };
+
+  const recentTransactions = [
     {
       id: 1,
-      date: "Nov 16, 2025",
-      description: "Grocery Store",
-      category: "Food",
-      amount: -3200,
-      categoryColor: "bg-orange-100 text-orange-700",
+      title: "Grocery Shopping",
+      category: "Food & Dining",
+      amount: -85.5,
+      date: "2024-12-01",
+      icon: "🍔",
+      type: "expense",
     },
     {
       id: 2,
-      date: "Nov 15, 2025",
-      description: "Salary Credit",
+      title: "Salary Deposit",
       category: "Income",
-      amount: 40000,
-      categoryColor: "bg-green-100 text-green-700",
+      amount: 3500.0,
+      date: "2024-12-02",
+      icon: "💰",
+      type: "income",
     },
     {
       id: 3,
-      date: "Nov 14, 2025",
-      description: "Electricity Bill",
-      category: "Utilities",
-      amount: -1800,
-      categoryColor: "bg-red-100 text-red-700",
+      title: "Netflix Subscription",
+      category: "Entertainment",
+      amount: -12.99,
+      date: "2024-12-05",
+      icon: "🎮",
+      type: "expense",
     },
     {
       id: 4,
-      date: "Nov 13, 2025",
-      description: "Restaurant",
-      category: "Food",
-      amount: -2500,
-      categoryColor: "bg-orange-100 text-orange-700",
+      title: "Freelance Payment",
+      category: "Income",
+      amount: 800.0,
+      date: "2024-12-07",
+      icon: "💰",
+      type: "income",
     },
     {
       id: 5,
-      date: "Nov 12, 2025",
-      description: "Online Shopping",
+      title: "Electric Bill",
+      category: "Bills & Utilities",
+      amount: -120.0,
+      date: "2024-12-08",
+      icon: "💡",
+      type: "expense",
+    },
+  ];
+
+  const budgets = [
+    {
+      category: "Food & Dining",
+      spent: 450,
+      budget: 600,
+      color: "from-orange-500 to-red-500",
+    },
+    {
+      category: "Transportation",
+      spent: 180,
+      budget: 300,
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      category: "Entertainment",
+      spent: 120,
+      budget: 200,
+      color: "from-green-500 to-teal-500",
+    },
+    {
       category: "Shopping",
-      amount: -5600,
-      categoryColor: "bg-purple-100 text-purple-700",
+      spent: 350,
+      budget: 400,
+      color: "from-purple-500 to-pink-500",
+    },
+  ];
+
+  const categoryBreakdown = [
+    {
+      category: "Food & Dining",
+      amount: 450,
+      percentage: 35,
+      color: "bg-orange-500",
+    },
+    {
+      category: "Transportation",
+      amount: 180,
+      percentage: 14,
+      color: "bg-blue-500",
+    },
+    {
+      category: "Shopping",
+      amount: 350,
+      percentage: 27,
+      color: "bg-purple-500",
+    },
+    {
+      category: "Entertainment",
+      amount: 120,
+      percentage: 9,
+      color: "bg-green-500",
+    },
+    {
+      category: "Bills & Utilities",
+      amount: 195,
+      percentage: 15,
+      color: "bg-yellow-500",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="max-w-7xl mx-auto p-6 md:p-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 p-8">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
-              {activeSection === "dashboard" && "Dashboard Overview"}
-              {activeSection === "transactions" && "All Transactions"}
-              {activeSection === "categories" && "Expense Categories"}
-              {activeSection === "budgets" && "Budget Management"}
-              {activeSection === "reports" && "Financial Reports"}
-              {activeSection === "settings" && "Account Settings"}
-            </h1>
-            <p className="text-slate-500 text-sm">
-              {new Date().toLocaleDateString("en-US", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <button className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium shadow-lg shadow-blue-500/30 hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Expense
-            </button>
-            <button className="px-4 py-2.5 bg-white text-slate-700 rounded-xl font-medium shadow-sm border border-slate-200 hover:shadow-md transition-all flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Export
-            </button>
+        <div className="mb-8">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-4xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                Dashboard
+              </h1>
+              <p className="text-slate-600 text-sm font-medium">
+                Welcome back, Nirdesh! Here's your financial overview
+              </p>
+            </div>
+
+            {/* Period Selector */}
+            <div className="flex items-center gap-2 bg-white rounded-xl p-1 border border-slate-200 shadow-sm">
+              {["week", "month", "year"].map((period) => (
+                <button
+                  key={period}
+                  onClick={() => setSelectedPeriod(period)}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 capitalize ${
+                    selectedPeriod === period
+                      ? "bg-linear-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                      : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {period}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Total Balance */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 hover:shadow-xl transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="text-slate-500 text-sm font-medium mb-1">
-                  Total Balance
-                </p>
-                <h3 className="text-3xl font-bold text-slate-800">
-                  NPR 45,800
-                </h3>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30">
-                <Wallet className="w-6 h-6 text-white" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-slate-600 text-sm font-medium">
+                Total Balance
+              </p>
+              <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                <Wallet className="text-white" size={20} />
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-1 text-green-600 font-semibold">
-                <TrendingUp className="w-4 h-4" />
-                <span>+8.2%</span>
-              </div>
-              <span className="text-slate-400">vs last month</span>
+            <p className="text-3xl font-bold text-slate-800 mb-2">
+              ${stats.totalBalance.toLocaleString()}
+            </p>
+            <div className="flex items-center gap-1 text-green-600 text-sm font-semibold">
+              <TrendingUp size={16} />
+              <span>+12.5% from last month</span>
             </div>
           </div>
 
-          {/* Monthly Expenses */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 hover:shadow-xl transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="text-slate-500 text-sm font-medium mb-1">
-                  Monthly Expenses
-                </p>
-                <h3 className="text-3xl font-bold text-slate-800">
-                  NPR 28,500
-                </h3>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-red-400 to-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/30">
-                <DollarSign className="w-6 h-6 text-white" />
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-slate-600 text-sm font-medium">
+                Monthly Income
+              </p>
+              <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                <ArrowUpRight className="text-green-600" size={20} />
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-1 text-red-600 font-semibold">
-                <TrendingDown className="w-4 h-4" />
-                <span>+15.3%</span>
-              </div>
-              <span className="text-slate-400">vs last month</span>
+            <p className="text-3xl font-bold text-green-600 mb-2">
+              ${stats.monthlyIncome.toLocaleString()}
+            </p>
+            <div className="flex items-center gap-1 text-green-600 text-sm font-semibold">
+              <TrendingUp size={16} />
+              <span>+8.2% from last month</span>
             </div>
           </div>
 
-          {/* Savings Rate */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 hover:shadow-xl transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="text-slate-500 text-sm font-medium mb-1">
-                  Savings Rate
-                </p>
-                <h3 className="text-3xl font-bold text-slate-800">38%</h3>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <PiggyBank className="w-6 h-6 text-white" />
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-slate-600 text-sm font-medium">
+                Monthly Expenses
+              </p>
+              <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+                <ArrowDownRight className="text-red-600" size={20} />
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-1 text-blue-600 font-semibold">
-                <TrendingUp className="w-4 h-4" />
-                <span>+5%</span>
+            <p className="text-3xl font-bold text-red-600 mb-2">
+              ${stats.monthlyExpenses.toLocaleString()}
+            </p>
+            <div className="flex items-center gap-1 text-red-600 text-sm font-semibold">
+              <TrendingDown size={16} />
+              <span>+5.1% from last month</span>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-slate-600 text-sm font-medium">Savings Rate</p>
+              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                <Target className="text-blue-600" size={20} />
               </div>
-              <span className="text-slate-400">improvement</span>
+            </div>
+            <p className="text-3xl font-bold text-blue-600 mb-2">
+              {stats.savingsRate}%
+            </p>
+            <div className="flex items-center gap-1 text-blue-600 text-sm font-semibold">
+              <TrendingUp size={16} />
+              <span>+2.3% from last month</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6">
+          <h2 className="text-xl font-bold text-slate-800 mb-4">
+            Quick Actions
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button className="flex flex-col items-center gap-3 p-4 rounded-xl bg-linear-to-br from-blue-50 to-purple-50 border border-blue-100 hover:shadow-md transition-all duration-200">
+              <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                <Plus className="text-white" size={24} />
+              </div>
+              <span className="font-semibold text-slate-800">
+                Add Transaction
+              </span>
+            </button>
+
+            <button className="flex flex-col items-center gap-3 p-4 rounded-xl bg-linear-to-br from-green-50 to-teal-50 border border-green-100 hover:shadow-md transition-all duration-200">
+              <div className="w-12 h-12 bg-linear-to-br from-green-600 to-teal-600 rounded-xl flex items-center justify-center">
+                <ShoppingBag className="text-white" size={24} />
+              </div>
+              <span className="font-semibold text-slate-800">Add Category</span>
+            </button>
+
+            <button className="flex flex-col items-center gap-3 p-4 rounded-xl bg-linear-to-br from-orange-50 to-red-50 border border-orange-100 hover:shadow-md transition-all duration-200">
+              <div className="w-12 h-12 bg-linear-to-br from-orange-600 to-red-600 rounded-xl flex items-center justify-center">
+                <Target className="text-white" size={24} />
+              </div>
+              <span className="font-semibold text-slate-800">Set Budget</span>
+            </button>
+
+            <button className="flex flex-col items-center gap-3 p-4 rounded-xl bg-linear-to-br from-purple-50 to-pink-50 border border-purple-100 hover:shadow-md transition-all duration-200">
+              <div className="w-12 h-12 bg-linear-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
+                <BarChart3 className="text-white" size={24} />
+              </div>
+              <span className="font-semibold text-slate-800">View Reports</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Budget Overview */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-slate-800">
+                Budget Overview
+              </h2>
+              <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">
+                View All
+              </button>
+            </div>
+            <div className="space-y-4">
+              {budgets.map((budget, index) => {
+                const percentage = (budget.spent / budget.budget) * 100;
+                return (
+                  <div key={index}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold text-slate-700">
+                        {budget.category}
+                      </span>
+                      <span className="text-sm font-bold text-slate-800">
+                        ${budget.spent} / ${budget.budget}
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full bg-linear-to-r ${budget.color} transition-all duration-500`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {percentage.toFixed(0)}% used • $
+                      {budget.budget - budget.spent} remaining
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Category Breakdown */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-slate-800">
+                Spending by Category
+              </h2>
+              <PieChart className="text-blue-600" size={24} />
+            </div>
+            <div className="space-y-3">
+              {categoryBreakdown.map((item, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <div
+                    className={`w-10 h-10 ${item.color} rounded-xl flex items-center justify-center shrink-0`}
+                  >
+                    <span className="text-white font-bold text-sm">
+                      {item.percentage}%
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-800 text-sm">
+                      {item.category}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      ${item.amount.toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`h-full ${item.color} rounded-full`}
+                      style={{ width: `${item.percentage}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Recent Transactions */}
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
-          <div className="p-6 border-b border-slate-100">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <h2 className="text-xl font-bold text-slate-800">
-                Recent Transactions
-              </h2>
-              <div className="flex gap-3 w-full md:w-auto">
-                <div className="relative flex-1 md:flex-initial">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    placeholder="Search transactions..."
-                    className="w-full md:w-64 pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <button className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center gap-2">
-                  <Filter className="w-4 h-4" />
-                  Filter
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-100">
-                <tr>
-                  <th className="text-left p-4 text-sm font-semibold text-slate-600">
-                    Date
-                  </th>
-                  <th className="text-left p-4 text-sm font-semibold text-slate-600">
-                    Description
-                  </th>
-                  <th className="text-left p-4 text-sm font-semibold text-slate-600">
-                    Category
-                  </th>
-                  <th className="text-right p-4 text-sm font-semibold text-slate-600">
-                    Amount
-                  </th>
-                  <th className="text-right p-4 text-sm font-semibold text-slate-600">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((transaction) => (
-                  <tr
-                    key={transaction.id}
-                    className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                  >
-                    <td className="p-4 text-sm text-slate-600">
-                      {transaction.date}
-                    </td>
-                    <td className="p-4 text-sm font-medium text-slate-800">
-                      {transaction.description}
-                    </td>
-                    <td className="p-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${transaction.categoryColor}`}
-                      >
-                        {transaction.category}
-                      </span>
-                    </td>
-                    <td
-                      className={`p-4 text-sm font-bold text-right ${
-                        transaction.amount > 0
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {transaction.amount > 0 ? "+" : ""}NPR{" "}
-                      {Math.abs(transaction.amount).toLocaleString()}
-                    </td>
-                    <td className="p-4 text-right">
-                      <button className="w-8 h-8 flex items-center justify-center hover:bg-slate-100 rounded-lg transition-colors">
-                        <MoreVertical className="w-4 h-4 text-slate-400" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="p-4 border-t border-slate-100 flex justify-between items-center">
-            <p className="text-sm text-slate-500">
-              Showing 5 of 48 transactions
-            </p>
-            <button className="text-sm text-blue-600 font-medium hover:underline">
-              View all transactions →
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-slate-800">
+              Recent Transactions
+            </h2>
+            <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">
+              View All
             </button>
           </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button className="px-5 py-2.5 bg-white text-slate-700 rounded-xl font-medium shadow-sm border border-slate-200 hover:shadow-md transition-all">
-            Set Budget
-          </button>
-          <button className="px-5 py-2.5 bg-white text-slate-700 rounded-xl font-medium shadow-sm border border-slate-200 hover:shadow-md transition-all">
-            View Reports
-          </button>
-          <button className="px-5 py-2.5 bg-white text-slate-700 rounded-xl font-medium shadow-sm border border-slate-200 hover:shadow-md transition-all">
-            Manage Categories
-          </button>
+          <div className="space-y-3">
+            {recentTransactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">{transaction.icon}</span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-800">
+                      {transaction.title}
+                    </p>
+                    <p className="text-sm text-slate-500">
+                      {transaction.category}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p
+                    className={`text-lg font-bold ${
+                      transaction.type === "income"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {transaction.type === "income" ? "+" : "-"}$
+                    {Math.abs(transaction.amount).toFixed(2)}
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    {new Date(transaction.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default Mainpage;
+export default Dashboard;

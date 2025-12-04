@@ -1,15 +1,68 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const ModernExpenseSidebar = ({ activeSection, onSectionChange }) => {
+const ModernExpenseSidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get active section from current path
+  const getActiveSection = () => {
+    const path = location.pathname;
+    if (path === "/dashboard") return "dashboard";
+    if (path === "/categories") return "categories";
+    if (path === "/transactions") return "transactions";
+    if (path === "/budgets") return "budgets";
+    if (path === "/reports") return "reports";
+    if (path === "/settings") return "settings";
+    return "dashboard";
+  };
+
+  const activeSection = getActiveSection();
 
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: "📊", badge: null },
-    { id: "transactions", label: "Transactions", icon: "💳", badge: "12" },
-    { id: "categories", label: "Categories", icon: "📁", badge: null },
-    { id: "budgets", label: "Budgets", icon: "💰", badge: "3" },
-    { id: "reports", label: "Reports", icon: "📈", badge: null },
-    { id: "settings", label: "Settings", icon: "⚙️", badge: null },
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      icon: "📊",
+      badge: null,
+      path: "/dashboard",
+    },
+    {
+      id: "transactions",
+      label: "Transactions",
+      icon: "💳",
+      badge: "12",
+      path: "/transactions",
+    },
+    {
+      id: "categories",
+      label: "Categories",
+      icon: "📁",
+      badge: null,
+      path: "/categories",
+    },
+    // {
+    //   id: "monthlySu",
+    //   label: "Budgets",
+    //   icon: "💰",
+    //   badge: "3",
+    //   path: "/budgets",
+    // },
+    {
+      id: "reports",
+      label: "Reports",
+      icon: "📈",
+      badge: null,
+      path: "/reports",
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: "⚙️",
+      badge: null,
+      path: "/settings",
+    },
   ];
 
   return (
@@ -20,7 +73,7 @@ const ModernExpenseSidebar = ({ activeSection, onSectionChange }) => {
     >
       <div className="flex flex-col h-full">
         {/* Logo Section */}
-        <div className="p-6 border-b border-slate-100 flex-shrink-0">
+        <div className="p-6 border-b border-slate-100 shrink-0">
           <div
             className={`flex items-center ${
               isCollapsed ? "justify-center flex-col gap-2" : "justify-between"
@@ -31,12 +84,12 @@ const ModernExpenseSidebar = ({ activeSection, onSectionChange }) => {
                 isCollapsed ? "flex-col gap-2" : "gap-3"
               }`}
             >
-              <div className="w-11 h-11 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <div className="w-11 h-11 bg-linear-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <span className="text-white font-bold text-xl">$</span>
               </div>
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <h1 className="text-xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     ExpensePro
                   </h1>
                   <p className="text-xs text-slate-500 font-medium">
@@ -62,12 +115,12 @@ const ModernExpenseSidebar = ({ activeSection, onSectionChange }) => {
             {menuItems.map((item) => (
               <li key={item.id}>
                 <button
-                  onClick={() => onSectionChange(item.id)}
+                  onClick={() => navigate(item.path)}
                   className={`w-full flex items-center ${
                     isCollapsed ? "justify-center p-3" : "justify-between p-3.5"
                   } rounded-xl transition-all duration-200 group ${
                     activeSection === item.id
-                      ? "bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-blue-600 shadow-sm"
+                      ? "bg-linear-to-r from-blue-50 to-purple-50 border-l-4 border-blue-600 shadow-sm"
                       : "hover:bg-slate-50"
                   }`}
                 >
@@ -103,14 +156,14 @@ const ModernExpenseSidebar = ({ activeSection, onSectionChange }) => {
         </nav>
 
         {/* User Profile */}
-        <div className="p-4 border-t border-slate-100 flex-shrink-0">
+        <div className="p-4 border-t border-slate-100 shrink-0">
           <div
             className={`flex items-center ${
               isCollapsed ? "justify-center" : "gap-3"
             }`}
           >
             <div className="relative">
-              <div className="w-11 h-11 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-11 h-11 bg-linear-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold">NK</span>
               </div>
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
