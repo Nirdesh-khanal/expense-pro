@@ -61,16 +61,16 @@ Make sure you have **Node.js** installed. You can download it here: https://node
     ```bash
     http://localhost:5173/
 
-🧪 Usage
+**🧪 Usage**
 
-Once the app is running:
-Add a transaction with amount, category, date, and description.
-View your expenses and income in a list.
-See running totals and insights on the dashboard.
-(Optional: Add screenshots here to showcase your UI.)
+- Once the app is running:
+- Add a transaction with amount, category, date, and description.
+- View your expenses and income in a list.
+- See running totals and insights on the dashboard.
+- (Optional: Add screenshots here to showcase your UI.)
 
-📈 Future Enhancements
-☁️ Cloud storage integration (e.g., Firebase, Supabase)
-📊 Charts and analytics (e.g., monthly trends)
-💾 Export data (.CSV / PDF)
-📱 Mobile layout improvements
+**📈 Future Enhancements**
+- ☁️ Cloud storage integration (e.g., Firebase, Supabase)
+- 📊 Charts and analytics (e.g., monthly trends)
+- 💾 Export data (.CSV / PDF)
+- 📱 Mobile layout improvements
