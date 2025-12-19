@@ -1,79 +1,66 @@
-// import { ESModulesEvaluator } from "vite/module-runner";
-import {LOG_URL_BASE} from "../commons/api"
-
 // src/services/auth.js
+import { authApi }  from "../commons/api"
 
-// const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+export const login = async ({ email, password }) => {
+  try {
+    const response = await authApi.post("/login/", { email, password });
 
-export const login = async (credentials) => {
-  const email = credentials?.email?.trim() || "";
-  const password = credentials?.password?.trim() || "";
+    const { access, refresh, is_admin, role } = response.data;
 
-  if (!email || !password) {
-    throw new Error("Please enter both email and password");
+    localStorage.setItem("access_token", access);
+    localStorage.setItem("refresh_token", refresh);
+    localStorage.setItem("role", role); 
+
+    if (is_admin || role === 'admin') {
+        localStorage.setItem("is_admin", "true");
+    } else {
+        localStorage.removeItem("is_admin");
+    }
+
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.detail ||
+        error.response?.data?.email?.[0] ||
+        "Login failed"
+    );
   }
-
-  if (!/^\S+@\S+\.\S+$/.test(email)) {
-    throw new Error("Please enter a valid email address");
-  }
-
-  const response = await fetch(`${LOG_URL_BASE}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    let errorMessage = "Login failed";
-
-    if (data.email) errorMessage = data.email[0];
-    else if (data.password) errorMessage = data.password[0];
-    else if (data.detail) errorMessage = data.detail;
-    else if (data.non_field_errors) errorMessage = data.non_field_errors[0];
-
-    throw new Error(errorMessage);
-  }
-
-  localStorage.setItem("access_token", data.access);
-  localStorage.setItem("refresh_token", data.refresh);
-
-  return data;
 };
 
-export const refreshToken = async() =>{
-  const refresh = localStorage.getItem('refresh-token');
-  if (!refresh) throw new Error('No refresh token');
-
-  const response = await fetch(`${LOG_URL_BASE}/api/token-refresh`,{
-    method: "POST",
-    headers:{
-      'Content-Type':'application/json',
-    },
-    body: JSON.stringify({refresh})
-  });
-
-  const data = await response.json();
-  if (!response.ok){
-    throw new Error('Token refresh failed')
+export const register = async ({ email, password }) => {
+  try {
+    const response = await authApi.post("/register/", { email, password });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.detail ||
+        error.response?.data?.email?.[0] ||
+        error.response?.data?.password?.[0] ||
+        "Registration failed"
+    );
   }
-
-  localStorage.setItem('access token', data.access);
-  return data.access;
 };
 
-export const logOut = async()=>{
-  localStorage.removeItem('access_token')
-  localStorage.removeItem('refresh_token')
+
+export const logout = () => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  localStorage.removeItem("is_admin");
+  localStorage.removeItem("role");
+  window.location.href = "/login";
 };
 
-export const isAuthenticated = () =>{
-  return !!localStorage.getItem('access_token');
+// check if logged in
+export const isAuthenticated = () => {
+  return !!localStorage.getItem("access_token");
 };
 
-export const getToken = () =>{
-  return localStorage.getItem('access_token')
+export const getProfile = async () => {
+  const response = await authApi.get("/profile/");
+  return response.data;
+}
+
+export const updateProfile = async (data) => {
+  const response = await authApi.put("/profile/", data);
+  return response.data;
 }

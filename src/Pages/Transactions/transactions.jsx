@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
   Search,
   Filter,
   Calendar,
-  // DollarSign,
   TrendingUp,
   TrendingDown,
   Edit2,
@@ -13,204 +12,67 @@ import {
   ArrowUpDown,
   IndianRupee,
 } from "lucide-react";
+import { getAllTransactions, deleteTransaction } from "../../services/expense";
+import AddExpenses from "../../components/AddExpenses";
+import Modal from "../../components/ModelWrapper/modelWrapper";
 
 const Transactions = () => {
-  const [selectedMonth, setSelectedMonth] = useState("2024-12");
+  const [selectedMonth, setSelectedMonth] = useState(
+    new Date().toISOString().slice(0, 7)
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterType, setFilterType] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
+  
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample transactions data
-  const allTransactions = {
-    "2024-12": [
-      {
-        id: 1,
-        date: "2024-12-01",
-        description: "Grocery Shopping",
-        category: "Food & Dining",
-        amount: -85.5,
-        type: "expense",
-        icon: "🍔",
-      },
-      {
-        id: 2,
-        date: "2024-12-02",
-        description: "Salary Deposit",
-        category: "Income",
-        amount: 3500.0,
-        type: "income",
-        icon: "💰",
-      },
-      {
-        id: 3,
-        date: "2024-12-03",
-        description: "Uber Ride",
-        category: "Transportation",
-        amount: -15.2,
-        type: "expense",
-        icon: "🚗",
-      },
-      {
-        id: 4,
-        date: "2024-12-05",
-        description: "Netflix Subscription",
-        category: "Entertainment",
-        amount: -12.99,
-        type: "expense",
-        icon: "🎮",
-      },
-      {
-        id: 5,
-        date: "2024-12-07",
-        description: "Electric Bill",
-        category: "Bills & Utilities",
-        amount: -120.0,
-        type: "expense",
-        icon: "💡",
-      },
-      {
-        id: 6,
-        date: "2024-12-10",
-        description: "Shopping",
-        category: "Shopping",
-        amount: -250.0,
-        type: "expense",
-        icon: "🛍️",
-      },
-      {
-        id: 7,
-        date: "2024-12-12",
-        description: "Freelance Payment",
-        category: "Income",
-        amount: 800.0,
-        type: "income",
-        icon: "💰",
-      },
-      {
-        id: 8,
-        date: "2024-12-15",
-        description: "Restaurant",
-        category: "Food & Dining",
-        amount: -65.0,
-        type: "expense",
-        icon: "🍔",
-      },
-    ],
-    "2024-11": [
-      {
-        id: 9,
-        date: "2024-11-01",
-        description: "Salary Deposit",
-        category: "Income",
-        amount: 3500.0,
-        type: "income",
-        icon: "💰",
-      },
-      {
-        id: 10,
-        date: "2024-11-05",
-        description: "Grocery Shopping",
-        category: "Food & Dining",
-        amount: -95.3,
-        type: "expense",
-        icon: "🍔",
-      },
-      {
-        id: 11,
-        date: "2024-11-08",
-        description: "Gas Station",
-        category: "Transportation",
-        amount: -45.0,
-        type: "expense",
-        icon: "🚗",
-      },
-      {
-        id: 12,
-        date: "2024-11-12",
-        description: "Gym Membership",
-        category: "Healthcare",
-        amount: -50.0,
-        type: "expense",
-        icon: "🏥",
-      },
-      {
-        id: 13,
-        date: "2024-11-15",
-        description: "Cinema Tickets",
-        category: "Entertainment",
-        amount: -30.0,
-        type: "expense",
-        icon: "🎮",
-      },
-      {
-        id: 14,
-        date: "2024-11-20",
-        description: "Online Course",
-        category: "Shopping",
-        amount: -99.0,
-        type: "expense",
-        icon: "🛍️",
-      },
-    ],
-    "2024-10": [
-      {
-        id: 15,
-        date: "2024-10-01",
-        description: "Salary Deposit",
-        category: "Income",
-        amount: 3500.0,
-        type: "income",
-        icon: "💰",
-      },
-      {
-        id: 16,
-        date: "2024-10-03",
-        description: "Coffee Shop",
-        category: "Food & Dining",
-        amount: -25.5,
-        type: "expense",
-        icon: "🍔",
-      },
-      {
-        id: 17,
-        date: "2024-10-10",
-        description: "Phone Bill",
-        category: "Bills & Utilities",
-        amount: -80.0,
-        type: "expense",
-        icon: "💡",
-      },
-      {
-        id: 18,
-        date: "2024-10-15",
-        description: "Car Maintenance",
-        category: "Transportation",
-        amount: -350.0,
-        type: "expense",
-        icon: "🚗",
-      },
-      {
-        id: 19,
-        date: "2024-10-20",
-        description: "Bonus",
-        category: "Income",
-        amount: 500.0,
-        type: "income",
-        icon: "💰",
-      },
-    ],
+  const fetchTransactions = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllTransactions();
+      setTransactions(data);
+    } catch (error) {
+      console.error("Error fetching transactions", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const transactions = allTransactions[selectedMonth] || [];
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const handleDelete = async (id, type) => {
+      // id is like "expense-12", "income-5"
+      // originalId is stored in the object if needed, or parse the strings
+      // But expense.js deleteTransaction expects id and type
+      // My expense.js getAllTransactions stores `originalId`.
+      // Let's find the transaction object
+      const transaction = transactions.find(t => t.id === id);
+      if(!transaction) return;
+
+      if(window.confirm("Are you sure you want to delete this transaction?")) {
+          try {
+              await deleteTransaction(transaction.originalId, transaction.type);
+              fetchTransactions();
+          } catch (error) {
+              console.error("Failed to delete", error);
+          }
+      }
+  }
+
+  // Filter by month first
+  const currentMonthTransactions = transactions.filter(t => t.date.startsWith(selectedMonth));
 
   // Calculate monthly stats
   const calculateStats = () => {
-    const income = transactions
+    const income = currentMonthTransactions
       .filter((t) => t.type === "income")
       .reduce((sum, t) => sum + t.amount, 0);
-    const expenses = transactions
+    const expenses = currentMonthTransactions
       .filter((t) => t.type === "expense")
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
     return { income, expenses, balance: income - expenses };
@@ -219,7 +81,7 @@ const Transactions = () => {
   const stats = calculateStats();
 
   // Filter transactions
-  const filteredTransactions = transactions.filter((transaction) => {
+  const filteredTransactions = currentMonthTransactions.filter((transaction) => {
     const matchesSearch =
       transaction.description
         .toLowerCase()
@@ -239,13 +101,17 @@ const Transactions = () => {
     return 0;
   });
 
-  const months = [
-    { value: "2024-12", label: "December 2024" },
-    { value: "2024-11", label: "November 2024" },
-    { value: "2024-10", label: "October 2024" },
-    { value: "2024-09", label: "September 2024" },
-    { value: "2024-08", label: "August 2024" },
-  ];
+  // Dynamic Month List
+  const months = [];
+  const date = new Date();
+  for (let i = 0; i < 6; i++) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const value = `${year}-${String(month).padStart(2, "0")}`;
+    const label = date.toLocaleString("default", { month: "long", year: "numeric" });
+    months.push({ value, label });
+    date.setMonth(date.getMonth() - 1);
+  }
 
   const categories = [
     "All",
@@ -256,10 +122,13 @@ const Transactions = () => {
     "Bills & Utilities",
     "Healthcare",
     "Income",
+    "Salary", // Added from backend
+    "Freelance",
+    "Business"
   ];
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 p-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 p-8 h-screen overflow-y-auto">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -287,7 +156,7 @@ const Transactions = () => {
                   Total Income
                 </p>
                 <p className="text-3xl font-bold text-green-600">
-                  ₹{stats.income.toFixed(2)}
+                  ₹{parseFloat(stats.income || 0).toFixed(2)}
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
@@ -303,7 +172,7 @@ const Transactions = () => {
                   Total Expenses
                 </p>
                 <p className="text-3xl font-bold text-red-600">
-                  ₹{stats.expenses.toFixed(2)}
+                  ₹{parseFloat(stats.expenses || 0).toFixed(2)}
                 </p>
               </div>
               <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
@@ -323,7 +192,7 @@ const Transactions = () => {
                     stats.balance >= 0 ? "text-blue-600" : "text-red-600"
                   }`}
                 >
-                  ₹{Math.abs(stats.balance).toFixed(2)}
+                  ₹{Math.abs(parseFloat(stats.balance || 0)).toFixed(2)}
                 </p>
               </div>
               <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
@@ -487,7 +356,7 @@ const Transactions = () => {
                         }`}
                       >
                         {transaction.type === "income" ? "+" : "-"}₹
-                        {Math.abs(transaction.amount).toFixed(2)}
+                        {Math.abs(parseFloat(transaction.amount || 0)).toFixed(2)}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -495,7 +364,10 @@ const Transactions = () => {
                         <button className="p-2 hover:bg-blue-50 rounded-lg transition-colors">
                           <Edit2 size={18} className="text-blue-600" />
                         </button>
-                        <button className="p-2 hover:bg-red-50 rounded-lg transition-colors">
+                        <button 
+                            className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                            onClick={() => handleDelete(transaction.id, transaction.type)}
+                        >
                           <Trash2 size={18} className="text-red-600" />
                         </button>
                       </div>
@@ -506,7 +378,7 @@ const Transactions = () => {
             </table>
           </div>
 
-          {sortedTransactions.length === 0 && (
+          {!loading && sortedTransactions.length === 0 && (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <IndianRupee className="text-slate-400" size={32} />
@@ -519,6 +391,11 @@ const Transactions = () => {
               </p>
             </div>
           )}
+           {loading && (
+             <div className="text-center py-16">
+               Loading transactions...
+             </div>
+           )}
         </div>
 
         {/* Export Button */}
@@ -529,6 +406,10 @@ const Transactions = () => {
           </button>
         </div>
       </div>
+      
+      <Modal isOpen={isAddingTransaction} onClose={() => setIsAddingTransaction(false)}>
+        <AddExpenses onClose={() => setIsAddingTransaction(false)} onSuccess={fetchTransactions} />
+      </Modal>
     </div>
   );
 };

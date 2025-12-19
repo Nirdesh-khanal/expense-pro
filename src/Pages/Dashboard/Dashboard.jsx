@@ -1,6 +1,6 @@
 import React from "react";
 import ExpenseTrackerSidebar from "../../components/Sidebar/Sidebar";
-import Mainpage from "../Mainpage/Mainpage";
+import MainPage from "../Mainpage/Mainpage";
 
 const Dashboard = () => {
   return (
@@ -12,7 +12,7 @@ const Dashboard = () => {
 
       {/* Main Content - Scrollable */}
       <div className="flex-1 min-w-0 h-screen overflow-y-auto">
-        <Mainpage />
+        <MainPage />
       </div>
     </div>
   );

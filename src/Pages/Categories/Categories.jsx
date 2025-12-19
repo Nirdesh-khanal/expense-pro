@@ -1,51 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Trash2, Plus, Edit2, Check, X, Folder, Tag } from "lucide-react";
+import { getCategories, createCategory, deleteCategory } from "../../services/expense";
 
 const Categories = () => {
-  const [categories, setCategories] = useState([
-    {
-      id: 1,
-      name: "Food & Dining",
-      color: "from-orange-500 to-red-500",
-      icon: "🍔",
-    },
-    {
-      id: 2,
-      name: "Transportation",
-      color: "from-blue-500 to-cyan-500",
-      icon: "🚗",
-    },
-    {
-      id: 3,
-      name: "Shopping",
-      color: "from-purple-500 to-pink-500",
-      icon: "🛍️",
-    },
-    {
-      id: 4,
-      name: "Entertainment",
-      color: "from-green-500 to-teal-500",
-      icon: "🎮",
-    },
-    {
-      id: 5,
-      name: "Bills & Utilities",
-      color: "from-yellow-500 to-orange-500",
-      icon: "💡",
-    },
-    {
-      id: 6,
-      name: "Healthcare",
-      color: "from-red-500 to-pink-500",
-      icon: "🏥",
-    },
-  ]);
-
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState("");
+
+  const isAdmin = localStorage.getItem("is_admin") === "true" || localStorage.getItem("role") === "admin";
 
   const colorOptions = [
     { gradient: "from-blue-500 to-cyan-500", icon: "💼" },
@@ -58,36 +24,61 @@ const Categories = () => {
     { gradient: "from-teal-500 to-green-500", icon: "🎁" },
   ];
 
-  const toggleCategory = (id) => {
+  const fetchCategories = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getCategories();
+      // Ensure data has color and icon, if not, assign random ones for display stability if backend doesn't store them fully
+      // The backend has color and icon fields, assuming they are populated.
+      setCategories(data);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const toggleCategory = (category) => {
+    if (!category.is_mine && !isAdmin) {
+        alert("You cannot modify global categories.");
+        return;
+    }
+    const id = category.id;
     setSelectedCategories((prev) =>
       prev.includes(id) ? prev.filter((catId) => catId !== id) : [...prev, id]
     );
   };
 
-  const addCategory = () => {
+  const addCategory = async () => {
     if (newCategoryName.trim()) {
-      const randomColor =
-        colorOptions[Math.floor(Math.random() * colorOptions.length)];
-      const newCategory = {
-        id: Date.now(),
-        name: newCategoryName.trim(),
-        color: randomColor.gradient,
-        icon: randomColor.icon,
-      };
-      setCategories([...categories, newCategory]);
-      setNewCategoryName("");
-      setIsAddingCategory(false);
+      try {
+        await createCategory(newCategoryName.trim());
+        setNewCategoryName("");
+        setIsAddingCategory(false);
+        fetchCategories(); // Refresh list
+      } catch (error) {
+        console.error("Failed to create category", error);
+        alert("Failed to create category");
+      }
     }
   };
 
-  const deleteSelected = () => {
+  const deleteSelected = async () => {
     if (
       window.confirm(`Delete ${selectedCategories.length} selected categories?`)
     ) {
-      setCategories(
-        categories.filter((cat) => !selectedCategories.includes(cat.id))
-      );
-      setSelectedCategories([]);
+      try {
+        await Promise.all(selectedCategories.map(id => deleteCategory(id)));
+        setSelectedCategories([]);
+        fetchCategories(); // Refresh list
+      } catch (error) {
+        console.error("Failed to delete categories", error);
+        alert("Failed to delete some categories");
+      }
     }
   };
 
@@ -98,11 +89,7 @@ const Categories = () => {
 
   const saveEdit = () => {
     if (editingName.trim()) {
-      setCategories(
-        categories.map((cat) =>
-          cat.id === editingId ? { ...cat, name: editingName.trim() } : cat
-        )
-      );
+      // Placeholder for future update implementation
       setEditingId(null);
       setEditingName("");
     }
@@ -241,23 +228,26 @@ const Categories = () => {
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((category) => (
+          {isLoading ? (
+             <div className="col-span-full py-12 text-center text-slate-500">Loading categories...</div>
+          ) : categories.map((category) => (
             <div
               key={category.id}
-              className={`group bg-white rounded-2xl p-6 border transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md ${
+              className={`group bg-white rounded-2xl p-6 border transition-all duration-200 shadow-sm hover:shadow-md ${
                 selectedCategories.includes(category.id)
                   ? "border-blue-500 ring-2 ring-blue-500/20 shadow-lg shadow-blue-500/10"
                   : "border-slate-100 hover:border-slate-200"
-              }`}
-              onClick={() => !editingId && toggleCategory(category.id)}
+              } ${(!category.is_mine && !isAdmin) ? 'opacity-70 cursor-not-allowed bg-slate-50' : 'cursor-pointer'}`}
+              onClick={() => !editingId && toggleCategory(category)}
             >
               <div className="flex items-start justify-between mb-4">
                 <div
-                  className={`w-14 h-14 bg-linear-to-br ${category.color} rounded-2xl flex items-center justify-center shadow-lg`}
+                  className={`w-14 h-14 bg-linear-to-br ${category.color || "from-gray-500 to-slate-500"} rounded-2xl flex items-center justify-center shadow-lg`}
                 >
-                  <span className="text-2xl">{category.icon}</span>
+                  <span className="text-2xl">{category.icon || "📁"}</span>
                 </div>
 
+                {/* Edit Button Removed for now, to be implemented properly later
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -270,43 +260,26 @@ const Categories = () => {
                     className="text-slate-400 hover:text-slate-600"
                   />
                 </button>
+                */}
               </div>
 
-              {editingId === category.id ? (
-                <div onClick={(e) => e.stopPropagation()} className="space-y-3">
-                  <input
-                    type="text"
-                    value={editingName}
-                    onChange={(e) => setEditingName(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && saveEdit()}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 text-sm font-medium focus:outline-none focus:border-blue-500"
-                    autoFocus
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={saveEdit}
-                      className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg text-sm font-semibold"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={cancelEdit}
-                      className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2 rounded-lg text-sm font-semibold"
-                    >
-                      Cancel
-                    </button>
+               {/* Editing Logic Removed/Simplified */}
+               <>
+                  <div className="flex justify-between items-center w-full">
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">
+                      {category.name}
+                    </h3>
+                    {(!category.is_mine && !isAdmin) && (
+                        <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full border border-slate-200 font-medium">Global</span>
+                    )}
+                     {(!category.is_mine && isAdmin) && (
+                        <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full border border-purple-200 font-medium">Admin</span>
+                    )}
                   </div>
-                </div>
-              ) : (
-                <>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2">
-                    {category.name}
-                  </h3>
                   <p className="text-sm text-slate-500 font-medium">
-                    Click to select
+                    { (!category.is_mine && !isAdmin) ? 'Read-only' : 'Click to select' }
                   </p>
                 </>
-              )}
 
               {selectedCategories.includes(category.id) &&
                 editingId !== category.id && (
@@ -319,7 +292,7 @@ const Categories = () => {
           ))}
         </div>
 
-        {categories.length === 0 && (
+        {!isLoading && categories.length === 0 && (
           <div className="bg-white rounded-2xl p-16 text-center border border-slate-100">
             <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Folder className="text-slate-400" size={32} />

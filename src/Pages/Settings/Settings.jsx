@@ -14,18 +14,22 @@ import {
   Trash2,
 } from "lucide-react";
 
+import { getProfile, updateProfile } from "../../services/auth";
+
 const Settings = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
   // Profile Settings State
   const [profile, setProfile] = useState({
-    fullName: "Nirdesh Khanal",
-    email: "khanalnirdesh0003@gmail.com",
-    phone: "+977 9812345678",
-    address: "Kathmandu, Nepal",
-    bio: "Premium Member since 2024",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    bio: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   // Security Settings State
   const [security, setSecurity] = useState({
@@ -36,21 +40,56 @@ const Settings = () => {
     sessionTimeout: "30",
   });
 
-  const handleSave = () => {
-    alert("Settings saved successfully!");
+  React.useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+        setIsLoading(true);
+        const data = await getProfile();
+        setProfile({
+            firstName: data.first_name || "",
+            lastName: data.last_name || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            address: data.address || "",
+            bio: data.bio || "",
+        });
+    } catch (error) {
+        console.error("Failed to fetch profile", error);
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+        await updateProfile({
+            first_name: profile.firstName,
+            last_name: profile.lastName,
+            phone: profile.phone,
+            address: profile.address,
+            bio: profile.bio
+        });
+        alert("Settings saved successfully!");
+    } catch (error) {
+        console.error("Failed to update profile", error);
+        alert("Failed to save settings.");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+            <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
               <span className="text-white text-2xl">⚙️</span>
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Settings
               </h1>
               <p className="text-slate-600 text-sm font-medium">
@@ -75,8 +114,10 @@ const Settings = () => {
               Profile Picture
             </label>
             <div className="flex items-center gap-4">
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-3xl">NK</span>
+              <div className="w-24 h-24 bg-linear-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-3xl">
+                    {profile.firstName ? profile.firstName.charAt(0).toUpperCase() : "U"}
+                </span>
               </div>
               <div className="flex gap-3">
                 <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-semibold transition-all duration-200">
@@ -94,13 +135,27 @@ const Settings = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Full Name
+                First Name
               </label>
               <input
                 type="text"
-                value={profile.fullName}
+                value={profile.firstName}
                 onChange={(e) =>
-                  setProfile({ ...profile, fullName: e.target.value })
+                  setProfile({ ...profile, firstName: e.target.value })
+                }
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium"
+              />
+            </div>
+
+             <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Last Name
+              </label>
+              <input
+                type="text"
+                value={profile.lastName}
+                onChange={(e) =>
+                  setProfile({ ...profile, lastName: e.target.value })
                 }
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium"
               />
@@ -118,10 +173,8 @@ const Settings = () => {
                 <input
                   type="email"
                   value={profile.email}
-                  onChange={(e) =>
-                    setProfile({ ...profile, email: e.target.value })
-                  }
-                  className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium"
+                  readOnly
+                  className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 focus:outline-none cursor-not-allowed font-medium"
                 />
               </div>
             </div>
@@ -146,7 +199,7 @@ const Settings = () => {
               </div>
             </div>
 
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Address
               </label>
@@ -188,7 +241,7 @@ const Settings = () => {
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-blue-500/30"
+              className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-blue-500/30"
             >
               <Save size={20} />
               Save Changes
@@ -207,7 +260,7 @@ const Settings = () => {
             <div className="p-6 bg-blue-50 border border-blue-200 rounded-xl">
               <div className="flex items-start gap-3">
                 <Shield
-                  className="text-blue-600 flex-shrink-0 mt-1"
+                  className="text-blue-600 shrink-0 mt-1"
                   size={24}
                 />
                 <div className="flex-1">
@@ -229,10 +282,10 @@ const Settings = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-14 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-14 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-1 after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
-                </div>
-              </div>
+                </div> 
+              </div> 
             </div>
 
             <div>
@@ -353,7 +406,7 @@ const Settings = () => {
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-blue-500/30"
+              className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-blue-500/30"
             >
               <Save size={20} />
               Save Changes
