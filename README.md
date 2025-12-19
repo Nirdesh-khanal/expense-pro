@@ -1,16 +1,72 @@
-# React + Vite
+# 💸 Expense‑Pro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive **Expense Tracker** web application built with **React** and **Vite** to help users manage personal finances — track income & expenses, categorize transactions, and visualize spending over time.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📊 Add, view, edit, and delete expenses  
+- 🧾 Categorize transactions (e.g., Food, Travel, Bills)  
+- 💰 Track income vs. expenses with real‑time balance updates  
+- 📅 Simple, clean UI with responsive design  
+- ⚡ Built with React + Vite for fast development and performance
 
-## React Compiler
+## 🧰 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Frontend |  
+|----------|  
+| React |  
+| Vite |  
+| CSS / Tailwind (optional) |  
+| LocalStorage or Context for state |  
 
-## Expanding the ESLint configuration
+> **Note:** If you integrate a backend or database in the future (e.g., Firebase, Node.js API), update this section accordingly.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🗂️ Project Structure
+expense-pro/
+├── public/
+├── src/
+│ ├── components/
+│ ├── pages/
+│ ├── App.jsx
+│ ├── index.jsx
+├── .gitignore
+├── package.json
+├── vite.config.js
+└── README.md
+
+### 📦 Prerequisites
+
+Make sure you have **Node.js** installed. You can download it here: https://nodejs.org
+
+### ⚙️ Installation
+
+1. **Clone the repo**
+
+   ```bash
+   git clone https://github.com/Nirdesh-khanal/expense-pro.git
+
+2. **Navigate into the page**
+    cd expense-pro
+
+3. **Install dependencies**
+    npm install
+
+4. **Start a developmental server**
+    npm run dev
+
+5. **Open your browser and go to**
+    http://localhost:5173/
+
+🧪 Usage
+
+Once the app is running:
+Add a transaction with amount, category, date, and description.
+View your expenses and income in a list.
+See running totals and insights on the dashboard.
+(Optional: Add screenshots here to showcase your UI.)
+
+📈 Future Enhancements
+☁️ Cloud storage integration (e.g., Firebase, Supabase)
+📊 Charts and analytics (e.g., monthly trends)
+💾 Export data (.CSV / PDF)
+📱 Mobile layout improvements
