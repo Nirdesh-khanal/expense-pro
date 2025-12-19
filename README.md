@@ -46,15 +46,19 @@ Make sure you have **Node.js** installed. You can download it here: https://node
    git clone https://github.com/Nirdesh-khanal/expense-pro.git
 
 2. **Navigate into the page**
+    ```bash
     cd expense-pro
 
 3. **Install dependencies**
+    ```bash
     npm install
 
 4. **Start a developmental server**
+    ```bash
     npm run dev
 
 5. **Open your browser and go to**
+    ```bash
     http://localhost:5173/
 
 🧪 Usage
