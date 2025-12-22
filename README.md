@@ -1,76 +1,60 @@
-# 💸 Expense‑Pro
+# Expense Pro - Frontend
 
-A modern, responsive **Expense Tracker** web application built with **React** and **Vite** to help users manage personal finances — track income & expenses, categorize transactions, and visualize spending over time.
+The frontend for **Expense Pro**, a modern and responsive expense tracking dashboard. Built with **React (Vite)** and **Tailwind CSS**, it provides an intuitive interface for users to manage their finances and for admins to monitor platform activity.
 
-## 🚀 Features
+## 🛠 Technology Stack
+- **Framework**: React 18+ (Vite)
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **HTTP Client**: Axios (with Interceptors for JWT)
+- **Routing**: React Router DOM (v6)
 
-- 📊 Add, view, edit, and delete expenses  
-- 🧾 Categorize transactions (e.g., Food, Travel, Bills)  
-- 💰 Track income vs. expenses with real‑time balance updates  
-- 📅 Simple, clean UI with responsive design  
-- ⚡ Built with React + Vite for fast development and performance
+## ✨ Key Features
 
-## 🧰 Tech Stack
+### 📱 Responsive UI
+- **Mobile-First Design**: Fully responsive layout that adapts to all screen sizes.
+- **Smart Sidebar**: Collapsible sidebar on desktop, slide-out drawer on mobile.
+- **Modern Aesthetics**: Clean design using glassmorphism effects, gradients, and smooth transitions.
 
-| Frontend |  
-|----------|  
-| React |  
-| Vite |  
-| CSS / Tailwind (optional) |  
-| LocalStorage or Context for state |  
+### 👤 User Dashboard
+- **Financial Overview**: Real-time cards showing Budget, Income, Expenses, and Balance.
+- **Visualizations**: Category-wise spending breakdown using color-coded charts.
+- **Transaction Management**: Easy-to-use modals for adding Expenses and Incomes.
+- **Budgeting**: Set and track monthly budgets with visual progress indicators.
 
-> **Note:** If you integrate a backend or database in the future (e.g., Firebase, Node.js API), update this section accordingly.
+### 🛡 Admin Dashboard
+- **User Management**: View, activate/deactivate, or delete users.
+- **Expense Monitoring**: Filter and inspect platform-wide transactions by user or date.
+- **Global Reports**: Dedicated analytics page showing platform health, trends, and top spenders.
 
-## 🗂️ Project Structure
-expense-pro/
-├── public/
-├── src/
-│ ├── components/
-│ ├── pages/
-│ ├── App.jsx
-│ ├── index.jsx
-├── .gitignore
-├── package.json
-├── vite.config.js
-└── README.md
+### 📊 Advanced Reporting
+- **Role-Based Views**: The `/reports` page adapts based on the logged-in user:
+  - **Users**: See their personal monthly summary and daily spending trends.
+  - **Admins**: See global platform statistics and user activity insights.
 
-### 📦 Prerequisites
+## 📂 Project Structure
+- `src/components`: Reusable UI components (Sidebar, Modals, Forms).
+- `src/Pages`: Main views (Login, Dashboard, AdminDashboard, Reports).
+- `src/services`: API integration services (`auth.js`, `expense.js`).
+- `src/commons`: Shared utilities and Axios configuration.
 
-Make sure you have **Node.js** installed. You can download it here: https://nodejs.org
+## ⚡ Getting Started
 
-### ⚙️ Installation
-
-1. **Clone the repo**
-
+1. **Install Dependencies**:
    ```bash
-   git clone https://github.com/Nirdesh-khanal/expense-pro.git
+   npm install
+   ```
 
-2. **Navigate into the page**
-    ```bash
-    cd expense-pro
+2. **Run Development Server**:
+   ```bash
+   npm run dev
+   ```
+   The app will be available at `http://localhost:5173/` (or similar).
 
-3. **Install dependencies**
-    ```bash
-    npm install
+3. **Build for Production**:
+   ```bash
+   npm run build
+   ```
 
-4. **Start a developmental server**
-    ```bash
-    npm run dev
-
-5. **Open your browser and go to**
-    ```bash
-    http://localhost:5173/
-
-**🧪 Usage**
-
-- Once the app is running:
-- Add a transaction with amount, category, date, and description.
-- View your expenses and income in a list.
-- See running totals and insights on the dashboard.
-- (Optional: Add screenshots here to showcase your UI.)
-
-**📈 Future Enhancements**
-- ☁️ Cloud storage integration (e.g., Firebase, Supabase)
-- 📊 Charts and analytics (e.g., monthly trends)
-- 💾 Export data (.CSV / PDF)
-- 📱 Mobile layout improvements
+## 🔐 Environment Setup
+Ensure the Backend URL is correctly configured in `src/commons/api.js` (Default: `http://127.0.0.1:8000/`).
