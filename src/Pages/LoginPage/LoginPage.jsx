@@ -26,8 +26,13 @@ export default function LoginPage() {
     setLoading(true); 
 
     try {
-      await login(formData); 
-      navigate("/dashboard");
+      const response = await login(formData); 
+      const role = localStorage.getItem('role');
+      if (role === 'admin') {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {

@@ -13,8 +13,21 @@ import {
   Loader2,
 } from "lucide-react";
 import { getMonthlySummary } from "../../services/expense";
+import AdminReport from "../../components/Admin/AdminReport";
 
 const Reports = () => {
+    const role = localStorage.getItem('role');
+
+    if (role === 'admin') {
+        return (
+            <div className="min-h-screen bg-slate-50 p-8">
+                <div className="max-w-7xl mx-auto">
+                    <AdminReport />
+                </div>
+            </div>
+        );
+    }
+
   // Initialize with current month
   const [selectedMonth, setSelectedMonth] = useState(
     new Date().toISOString().slice(0, 7)

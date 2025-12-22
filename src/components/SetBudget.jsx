@@ -11,7 +11,7 @@ import {
 
 import { createMonthlyBudget } from "../services/expense";
 
-const SetBudget = ({ onClose }) => {
+const SetBudget = ({ onClose, onSuccess }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const currentDate = new Date();
   const currentMonth = currentDate.toLocaleString("default", { month: "long" });
@@ -83,6 +83,7 @@ const SetBudget = ({ onClose }) => {
         setIsSuccess(false);
         setBudgetData({ ...budgetData, monthlyBudget: "" });
         if(onClose) onClose();
+        if(onSuccess) onSuccess();
       }, 1500);
     } catch (error) {
       console.error("Error:", error.response?.data);

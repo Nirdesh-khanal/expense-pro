@@ -20,13 +20,17 @@ const ModernExpenseSidebar = () => {
 
   const activeSection = getActiveSection();
 
+  // Get role from localStorage
+  const role = localStorage.getItem('role');
+  const dashboardLink = role === 'admin' ? '/admin-dashboard' : '/dashboard';
+
   const menuItems = [
     {
       id: "dashboard",
       label: "Dashboard",
       icon: "📊",
       badge: null,
-      path: "/dashboard",
+      path: dashboardLink,
     },
     {
       id: "transactions",

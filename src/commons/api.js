@@ -2,8 +2,8 @@
 import axios from "axios";
 
 // ────── BASE URLs ──────
-export const EXPENSE_API_BASE = "http://127.0.0.1:8000/expenses";
-export const ACCOUNT_API_BASE = "http://127.0.0.1:8000/accounts";
+export const EXPENSE_API_BASE = "http://127.0.0.1:8000/expenses/";
+export const ACCOUNT_API_BASE = "http://127.0.0.1:8000/accounts/";
 
 // ────── Main API (for expenses, budgets, transactions) ──────
 const api = axios.create({

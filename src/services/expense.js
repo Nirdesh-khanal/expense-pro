@@ -18,19 +18,19 @@ const getIcon = (category) => {
 };
 
 export const createCategory = async (name) => {
-  const response = await api.post("/categories/", { name });
+  const response = await api.post("categories/", { name });
   return response.data;
 };
 
 export const getCategories = async () => {
 
-  const response = await api.get("/categories/");
+  const response = await api.get("categories/");
   return response.data;
 };
 
 export const getMonthlySummary = async (year, month) => {
   try {
-    const response = await api.get(`/summary/${year}/${month}/`);
+    const response = await api.get(`summary/${year}/${month}/`);
     return response.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {
@@ -43,19 +43,25 @@ export const getMonthlySummary = async (year, month) => {
 export const getAllTransactions = async () => {
   try {
     const [expensesRes, incomesRes, categoriesRes] = await Promise.all([
-      api.get("/expenses/"),
-      api.get("/incomes/"),
-      api.get("/categories/"),
+      api.get("expenses/"),
+      api.get("incomes/"),
+      api.get("categories/"),
     ]);
 
     const categoriesMap = {};
-    if (Array.isArray(categoriesRes.data)) {
-        categoriesRes.data.forEach(cat => {
-            categoriesMap[cat.id] = cat.name;
-        });
-    }
+    const categoriesData = Array.isArray(categoriesRes.data) ? categoriesRes.data : (categoriesRes.data?.results || []);
+    
+    categoriesData.forEach(cat => {
+        categoriesMap[cat.id] = cat.name;
+    });
 
-    const expenses = Array.isArray(expensesRes.data) ? expensesRes.data.map((item) => ({
+    console.log("Raw Expenses Response:", expensesRes.data);
+    console.log("Raw Incomes Response:", incomesRes.data);
+    console.log("Raw Categories Response:", categoriesRes.data);
+
+    const expensesData = Array.isArray(expensesRes.data) ? expensesRes.data : (expensesRes.data?.results || []);
+    console.log("Processed Expenses Data:", expensesData);
+    const expenses = expensesData.map((item) => ({
       id: `expense-${item.id}`, // Unique ID across types
       originalId: item.id,
       date: item.date,
@@ -64,9 +70,10 @@ export const getAllTransactions = async () => {
       amount: -parseFloat(item.amount), // Negative for expense
       type: "expense",
       icon: getIcon(categoriesMap[item.category]),
-    })) : [];
+    }));
 
-    const incomes = Array.isArray(incomesRes.data) ? incomesRes.data.map((item) => {
+    const incomesData = Array.isArray(incomesRes.data) ? incomesRes.data : (incomesRes.data?.results || []);
+    const incomes = incomesData.map((item) => {
       const categoryName = item.category ? (item.category.charAt(0).toUpperCase() + item.category.slice(1)) : "Salary";
       return {
         id: `income-${item.id}`,
@@ -78,10 +85,12 @@ export const getAllTransactions = async () => {
         type: "income",
         icon: getIcon("Income"),
       };
-    }) : [];
+    });
 
     // Merge and sort by date descending
-    return [...expenses, ...incomes].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const result = [...expenses, ...incomes].sort((a, b) => new Date(b.date) - new Date(a.date));
+    console.log("Final Transactions Result:", result);
+    return result;
 
   } catch (error) {
     console.error("Error fetching transactions:", error);
@@ -93,16 +102,16 @@ export const createTransaction = async (data) => {
   // data should have: title, amount, date, category (ID or Value), type
   if (data.type === "expense") {
     // Expects category to be an ID
-    return await api.post("/expenses/", {
-      title: data.description,
+    return await api.post("expenses/", {
+      title: data.title || data.description,
       amount: Math.abs(data.amount),
       date: data.date,
       category: data.category, 
     });
   } else {
     // Income
-    return await api.post("/incomes/", {
-      title: data.description,
+    return await api.post("incomes/", {
+      title: data.title || data.description,
       amount: Math.abs(data.amount),
       date: data.date,
       category: data.category.toLowerCase(), // Ensure lowercase for choices
@@ -111,28 +120,20 @@ export const createTransaction = async (data) => {
 };
 
 export const deleteTransaction = async (id, type) => {
-    const endpoint = type === 'expense' ? '/expenses/' : '/incomes/';
+    const endpoint = type === 'expense' ? 'expenses/' : 'incomes/';
     return await api.delete(`${endpoint}${id}/`);
 }
 
 export const deleteCategory = async (id) => {
-    return await api.delete(`/categories/${id}/`);
+    return await api.delete(`categories/${id}/`);
 };
 
 export const createMonthlyBudget = async (data) => {
-  const response = await api.post("/budgets/", data);
+  const response = await api.post("budgets/", data);
   return response.data;
 };
 
 export const fetchMonthlyBudget = async (email) => {
-  // email param is optional/ignored by backend which uses request.user, but keeping signature for now or simplifying
-  // Backend filters by request.user so we don't strictly need email in query if auth is working usually.
-  // But let's match what Transaction.jsx had: api.get(`/budgets/?email=${email}`)
-  // Actually checking backend views.py: `MonthlyBudgetViewSet` filters by `request.user`.
-  // It doesn't seem to use email query param.
-  // I will just use /budgets/ and let backend handle it.
-  // Wait, `Transaction.jsx` had `?email=${email}`. Maybe legacy?
-  // I'll stick to simple get for now.
-  const response = await api.get("/budgets/");
+  const response = await api.get("budgets/");
   return response.data;
 };

@@ -9,6 +9,9 @@ import Transactions from "./Pages/Transactions/transactions";
 import Reports from "./Pages/Report/Report";
 import Settings from "./Pages/Settings/Settings";
 import SetBudget from "./components/SetBudget";
+import AdminDashboard from "./Pages/AdminDashboard/AdminDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 // import HomePage from "./pages/HomePage/homePage";
 
 const App = () => {
@@ -20,43 +23,64 @@ const App = () => {
         <Route path="/setBudget" element={<SetBudget />} />
 
         <Route
+          path="/admin-dashboard"
+          element={
+            <AdminRoute>
+              <DashboardLayout>
+                <AdminDashboard />
+              </DashboardLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
           path="/dashboard"
           element={
-            <DashboardLayout>
-              <Dashboard />
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Dashboard />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/categories"
           element={
-            <DashboardLayout>
-              <Categories />
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Categories />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/transactions"
           element={
-            <DashboardLayout>
-              <Transactions />
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Transactions />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/reports"
           element={
-            <DashboardLayout>
-              <Reports />
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Reports />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/settings"
           element={
-            <DashboardLayout>
-              <Settings />
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Settings />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
       </Routes>

@@ -87,7 +87,7 @@ const AddExpenses = ({ onClose, onSuccess }) => {
     try {
         await createTransaction({
             type: expenseData.type,
-            description: expenseData.title,
+            title: expenseData.title,
             amount: expenseData.amount,
             date: expenseData.date,
             category: expenseData.category

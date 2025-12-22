@@ -1,4 +1,3 @@
-// src/services/auth.js
 import { authApi }  from "../commons/api"
 
 export const login = async ({ email, password }) => {
@@ -16,7 +15,7 @@ export const login = async ({ email, password }) => {
     } else {
         localStorage.removeItem("is_admin");
     }
-
+    
     return response.data;
   } catch (error) {
     throw new Error(
@@ -47,10 +46,9 @@ export const logout = () => {
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("is_admin");
   localStorage.removeItem("role");
-  window.location.href = "/login";
+  window.location.href = "/";
 };
 
-// check if logged in
 export const isAuthenticated = () => {
   return !!localStorage.getItem("access_token");
 };

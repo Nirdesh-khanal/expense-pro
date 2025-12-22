@@ -13,7 +13,7 @@ import {
   LogOut,
 } from "lucide-react";
 import SetBudget from "../../components/SetBudget";
-import AddExpenses from "../../components/AddExpenses";
+import AddExpenses from "../../components/addExpenses";
 import AddCategoryModal from "../../components/AddCategory";
 import Modal from "../../components/ModelWrapper/modelWrapper";
 import { getMonthlySummary, getAllTransactions } from "../../services/expense";
@@ -150,7 +150,7 @@ const MainPage = () => {
                 <div className="text-xl font-bold text-slate-800 mb-2">
                   Loading...
                 </div>
-              ) : summary ? (
+              ) : summary && parseFloat(summary.monthly_budget) > 0 ? (
                 <>
                   <p className="text-3xl font-bold text-slate-800 mb-2">
                     ₹{parseFloat(summary.monthly_budget).toLocaleString("en-IN", {
@@ -378,7 +378,7 @@ const MainPage = () => {
 
       {/* Modal for SetBudget */}
       <Modal isOpen={showSetBudget} onClose={() => setShowSetBudget(false)}>
-        <SetBudget onClose={() => setShowSetBudget(false)} />
+        <SetBudget onClose={() => setShowSetBudget(false)} onSuccess={fetchData} />
       </Modal>
 
       {/* Modal for AddExpenses (Acting as Add Transaction) */}
